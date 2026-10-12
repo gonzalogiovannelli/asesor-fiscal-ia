@@ -9,4 +9,6 @@ liquidación trimestral con etiquetas de transporte. Tiene dos usos:
    lo revisa en cada commit, y `scripts/probar-check.sh` lo rompe a propósito en una copia para
    comprobar que el control lo detecta.
 
-Se puede borrar cuando ya tengas tus propios libros: quitá también su línea de `libros.conf`.
+**No lo borres aunque ya tengas tus propios libros:** es el caso de prueba de
+`probar-check.sh`, y `alta` lo usa como modelo. No interfiere con tus datos: el control lo
+revisa como un expediente más.

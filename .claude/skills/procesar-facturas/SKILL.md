@@ -76,8 +76,10 @@ abiertos. Y los totales y resúmenes actualizados. Si no hay facturas nuevas, de
 
 ## España (formato `es`, el ejemplo de la plantilla)
 
-Modelo con datos inventados en `ejemplos/documentos-es/`. Libros:
-`documentos-es/registro-emitidas.md` y `documentos-es/registro-recibidas.md`.
+Modelo con datos inventados en `ejemplos/documentos-es/`. **Un libro por año:**
+`documentos-es/registro-emitidas-<año>.md` y `documentos-es/registro-recibidas-<año>.md`.
+A principios de enero se abren los del año nuevo, con la línea de totales en cero (los
+rótulos exactos están en la skill `alta`).
 
 ### Columnas, hay que rellenarlas todas
 
@@ -86,53 +88,78 @@ IVA rep. € | Tipo Ret. | Retención € | Total € | Archivo`
 
 **RECIBIDAS**: `ID | Fecha | Trim. IVA | Emisor (NIF) | Nº factura | Concepto | Base € | Tipo
 IVA | IVA € | Divisa orig. | Régimen IVA | % Ded. IVA | IVA deduc. € | % Ded. IRPF | Tratam.
-IRPF | IRPF deduc. € | Total € | Archivo`
+IRPF | IRPF deduc. € | Tipo Ret. | Retención € | Total € | Archivo`
 
 **El orden de columnas y los rótulos de la línea de totales son contrato con el control de
 coherencia** (checks 4 y 6). Si se cambian, se cambia el script en el mismo commit y se corre
 `scripts/probar-check.sh`.
 
-- **Divisa orig.**: vacío si es EUR; si no, `<importe> <moneda> @ <tipo> (BCE <fecha>)`.
+- **ID de emitidas**: el número legal. **Las rectificativas van en su propia serie** (por
+  ejemplo `R-0001-<año>`), con importes en negativo, en el mismo libro.
+- **Divisa orig.**: vacío si es EUR; si no, `<importe> <moneda> @ <tipo> (<fuente>)`. El tipo
+  es el último publicado (BCE o Banco de España) **vigente en el momento del devengo** (art.
+  79.Once LIVA).
 - **Trimestre / Trim. IVA** (`AAAA-NT`): trimestre en que se imputa el IVA.
   - Emitidas: por **devengo** (art. 75 LIVA).
-  - Recibidas: normalmente el del devengo; **si llega tarde y su trimestre ya se presentó,
-    se imputa al vigente** (derecho a deducir hasta cuatro años, art. 99.Tres LIVA) y se
-    anota. Esta columna es el control contra la doble imputación o la falta de imputación.
+  - Recibidas: el IVA soportado se deduce en el periodo en que se tiene la factura (art.
+    98.Dos LIVA), normalmente el del devengo. **Si llega tarde y su trimestre ya se presentó,
+    se imputa al vigente** (hasta cuatro años, art. 99.Tres LIVA) y se anota. Esta columna es
+    el control contra la doble imputación o la falta de imputación.
+  - **El IRPF no sigue esta columna:** el gasto se imputa por la **fecha** de la factura. El
+    control lo calcula así.
+- **Tipo Ret. y Retención € (recibidas)**: la retención que **el usuario practica** al pagar,
+  por ejemplo a un arrendador o a otro profesional. El tipo lleva el modelo entre paréntesis,
+  `19% (115)` o `15% (111)`, porque de ahí salen las claves `recibidas.ret115` y `ret111`.
+  Sin retención: tipo vacío y `0,00`.
 
 ### Deducibilidad (recibidas)
 
 1. **Régimen IVA**:
    - `Nacional`: proveedor español, IVA deducible. `Nacional (B2C)` si facturó como a un
      consumidor.
-   - `ISP servicio`: servicio de un proveedor **no establecido**. Se auto-repercute y se
-     deduce, así que es **neutro**. Extra-UE: 303 sí, 349 no. UE: 303 y 349.
+   - `ISP servicio`: servicio de un proveedor **no establecido**. El usuario autoliquida:
+     devenga el IVA y lo deduce. Extra-UE: 303 sí, 349 no. UE: 303 y 349.
    - `ISP bien`: bien de un proveedor no establecido con la mercancía ya en España: 303 sí,
      349 no.
-   - `Intracom.`: adquisición intracomunitaria de bienes: 303 y 349.
+   - `Intracom.`: adquisición intracomunitaria de bienes, también autoliquidada: 303 y 349.
    - `Exento` o no sujeto.
+
+   En los tres regímenes de autoliquidación el proveedor no cobra IVA: **el total es la base
+   menos la retención**, la columna `IVA €` es el IVA devengado y `IVA deduc. €` lo que se
+   deduce. Con deducción del 100% el efecto en el 303 es neutro; con menos, no.
 2. **% Ded. IVA** y **% Ded. IRPF** (firmes: 100, 50 o 0):
    - Requisito: factura al NIF del usuario y relación con la actividad.
    - Coste indivisible (una habitación de hotel) entero; coste por persona (un pasaje) solo
      el propio.
-   - **Turismo de uso mixto** (coche, renting, combustible): IVA 50%, IRPF 0% (art. 95.Tres
-     LIVA), salvo prueba de afectación exclusiva.
+   - **Turismo de uso mixto** (coche, renting, combustible): IVA 50% (presunción del art.
+     95.Tres LIVA, que admite prueba en contrario) e IRPF 0% salvo afectación exclusiva.
    - Software y servicios de la actividad: 100%.
    - Gasto personal: 0%.
-3. **IVA deduc. €** = cuota × % Ded. IVA. En ISP, la cuota auto-repercutida.
+3. **IVA deduc. €** = cuota × % Ded. IVA. En autoliquidación, la cuota devengada.
 4. **IRPF deduc. €** = base × % Ded. IRPF, con dos excepciones:
    - Si el IVA no se recupera (`% Ded. IVA = 0`), se incorpora al coste: IRPF sobre base +
      IVA.
-   - **Bien de inversión de más de 300 € por unidad** (`Tratam. IRPF = Amortización`): no se
-     deduce de golpe. Se amortiza según la tabla simplificada, prorrateando por días el año
-     de alta. La celda dice `ver cuadro` y el bien va al **Cuadro de amortizaciones** al pie
-     del libro.
+   - **Elemento del inmovilizado de más de 300 € por unidad** (`Tratam. IRPF = Amortización`):
+     no se deduce de golpe; se amortiza. Los de hasta 300 € pueden deducirse enteros (art.
+     12.3.e de la Ley del Impuesto sobre Sociedades, con un límite de 25.000 € al año). En
+     estimación directa simplificada se usa la **tabla simplificada** (equipos informáticos:
+     26%); en directa normal, la tabla general de esa ley. Se prorratea por días el año de
+     alta. La celda dice `ver cuadro` y el bien va al **Cuadro de amortizaciones** al pie del
+     libro. No confundir con los "bienes de inversión" del IVA (art. 108 LIVA), que es otro
+     concepto y otro umbral.
 5. **Tratam. IRPF**: `Corriente` o `Amortización`.
 
 ### Resúmenes
 
-`documentos-es/declaraciones/<año>/<año-trimestre>/liquidacion.md` (303 y 130 del trimestre)
-y `<año>_resumen-anual.md`. Las claves de transporte disponibles están en la cabecera del
-check 6 de `scripts/check-coherencia.sh`.
+`documentos-es/declaraciones/<año>/<año-trimestre>/liquidacion.md` (303, 111, 115 y 130 del
+trimestre) y `<año>_resumen-anual.md`. El 130 es **acumulado desde el 1 de enero**: se usan
+las claves `AAAA-ACNT`. Las claves disponibles están en la cabecera del check 6 de
+`scripts/check-coherencia.sh`; un trimestre sin facturas tiene sus claves en cero, así que un
+303 a cero también se etiqueta.
+
+Si el año anterior al menos el 70% de los ingresos de la actividad llevó retención, no hay
+obligación de presentar el 130 (art. 109.1 del Reglamento del IRPF). Se anota en la
+liquidación como exento, con la fuente, en lugar de dejarlo como pendiente.
 
 ---
 

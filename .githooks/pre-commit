@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 # pre-commit: bloquea el commit si el control de coherencia falla
 # (contexto/arquitectura.md, sección 7, nivel 2).
+#
+# Revisa LO QUE SE VA A COMMITEAR (el índice), no la carpeta de trabajo: copia el
+# índice a una carpeta temporal y corre el control ahí. Así un archivo arreglado en
+# la carpeta pero roto en lo preparado no pasa, y un cambio sin preparar no bloquea
+# commits que no tienen nada que ver.
+#
 # Se activa con:  git config core.hooksPath .githooks
 # Saltarlo a propósito (no recomendado, solo emergencias):  git commit --no-verify
-if ! bash scripts/check-coherencia.sh; then
+set -u
+tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+git checkout-index -a -f --prefix="$tmp/" || { echo "❌ No se pudo copiar el índice para revisarlo."; exit 1; }
+if ! bash "$tmp/scripts/check-coherencia.sh"; then
   echo
-  echo "❌ Commit ABORTADO: hay incidencias de coherencia (arriba). Arreglalas y reintentá."
+  echo "❌ Commit ABORTADO: hay incidencias de coherencia en lo preparado (arriba). Arreglalas y reintentá."
   echo "   Perímetro: la historia congelada (bitacora/, tickets/cerrados/) no cuenta."
   exit 1
 fi

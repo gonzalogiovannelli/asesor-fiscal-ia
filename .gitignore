@@ -9,3 +9,6 @@ Desktop.ini
 
 # Configuración local de Claude Code
 .claude/settings.local.json
+
+# Estado local de los hooks de sesión
+.claude/cierre-pendiente.txt

@@ -137,12 +137,21 @@ jurisdicción y su fuente. Los vigilan `revisar-vencimientos` y `actualizar-sald
 
 ### 5. Expediente: `documentos-<código>/`
 
-Código de país en minúsculas (`es`, `ar`, `mx`...). Con `declaraciones/` y, si la
-jurisdicción exige llevar registros, los libros:
+Código de país en minúsculas (`es`, `ar`, `mx`...). Con `declaraciones/<año>/` y, si la
+jurisdicción exige llevar registros, `facturas-emitidas/<año>/`, `facturas-recibidas/<año>/`
+y los libros, **uno por año**:
 
 - **Si es España:** el formato es el de `ejemplos/documentos-es/`. Se crean
-  `registro-emitidas.md` y `registro-recibidas.md` con la cabecera de columnas y la línea de
-  totales en cero, y se añade `documentos-es es` a `scripts/libros.conf`.
+  `registro-emitidas-<año>.md` y `registro-recibidas-<año>.md` copiando la cabecera de
+  columnas del ejemplo, sin filas, y con la línea de totales en cero **con estos rótulos
+  exactos**, que son contrato con el control:
+
+  ```
+  **Totales emitidas <año>:** Base: 0,00 € · IVA repercutido: 0,00 € · Retención: 0,00 € · Facturado: 0,00 € · Cobrado: 0,00 €
+  **Totales recibidas <año>:** Base: 0,00 € · Retención: 0,00 € · Total facturas: 0,00 €
+  ```
+
+  Y se añade `documentos-es es` a `scripts/libros.conf`.
 - **Si es otro país:** se diseña el libro a partir de la obligación de registro que se
   investigó en el paso 1 (qué columnas exige la norma, qué impuesto se repercute, qué
   retenciones hay). Y entonces, **en este orden**:
@@ -156,9 +165,12 @@ jurisdicción exige llevar registros, los libros:
      check que no se probó rompiendo algo no cuenta como control
   5. Se añaden las dos líneas a `scripts/libros.conf` (el ejemplo y el expediente real)
 
-  Si en este alta no da el tiempo para el check, se declara el expediente con su formato
-  igual: el control va a avisar `SIN CHECK` en cada commit hasta que exista, que es lo que
-  tiene que pasar. **No se deja el expediente fuera de `libros.conf` para que no avise.**
+  **El alta de un país con libros no termina sin su check.** Si el expediente se declara
+  en `libros.conf` antes de que exista, el control da `SIN CHECK` y **bloquea todos los
+  commits del repo**, que es lo que tiene que pasar: un libro que nadie cuadra no puede
+  pasar por controlado. **No se deja el expediente fuera de `libros.conf` para esquivar el
+  aviso.** Si no da el tiempo, el alta de ese país se deja a medias en un ticket y sin
+  commitear los libros.
 - **Si no exige registros** (por ejemplo, solo una declaración anual de un alquiler): solo
   `declaraciones/`, y nada en `libros.conf`.
 
@@ -171,10 +183,12 @@ añade a `scripts/terminos-prohibidos.conf`.
 1. Tickets para cada pendiente de confirmar que sea material, y para cada interpretación que
    haya que validar con un profesional
 2. `contexto/INDICE.md`: la ficha, los mapas, la jurisdicción, el calendario y el expediente
-3. Primera marca en `vigilancia/<año>.md`: la investigación de alta cuenta como barrido de
+3. En el calendario, una **auditoría anual completa** (arquitectura, sección 7, nivel 4) y la
+   **apertura del año nuevo** de los libros a principios de enero
+4. Primera marca en `vigilancia/<año>.md`: la investigación de alta cuenta como barrido de
    ese mes para esa jurisdicción
-4. Entrada en `bitacora/<año>.md`
-5. `bash scripts/check-coherencia.sh` en verde, y commit
+5. Entrada en `bitacora/<año>.md`
+6. `bash scripts/check-coherencia.sh` en verde, y commit
 
 ## Mudanza
 

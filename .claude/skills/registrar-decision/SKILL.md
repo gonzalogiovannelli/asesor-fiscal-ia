@@ -20,7 +20,8 @@ que reabrirlo.
      su coste**
    - **Asumido por el usuario**: sí o no, y con qué información
    - **Condiciones de revisión**: qué obliga a reabrirla
-3. **Escribí** la entrada `### DX: <título>` al final de "Decisiones tomadas".
+3. **Escribí** la entrada `### D<número>: <título>` (D1, D2...) al final de "Decisiones
+   tomadas". En el resto del sistema se las llama D-X.
 4. **Disparadores**: si la decisión introduce umbrales o eventos a vigilar, a la sección de
    disparadores.
 5. **Log**: si revisa una decisión anterior, una fila en el log de revisiones.
@@ -38,7 +39,7 @@ una regularización voluntaria) con su coste, para que la elección sea informad
 ## Plantilla
 
 ```markdown
-### DX: <título corto>
+### D<número>: <título corto>
 - **Fecha**: AAAA-MM-DD
 - **Contenido**: <qué se decide>
 - **Razonamiento**:

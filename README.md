@@ -11,14 +11,24 @@ de ahí investiga en fuentes oficiales qué obligaciones te tocan y arma el rest
 > **No es asesoramiento fiscal.** Te ayuda a entender, ordenar y preparar. La validación final
 > y la presentación de lo complejo son de un profesional matriculado.
 
+## Requisitos
+
+- [Claude Code](https://claude.com/claude-code)
+- `git` y `bash` (en Windows, el de Git for Windows)
+- Un `awk` que entienda UTF-8. `gawk` es lo recomendado; en macOS se instala con
+  `brew install gawk`
+
 ## Cómo se usa
 
-1. Creá tu copia a partir de esta plantilla, **como repositorio privado**. Va a contener tus
-   datos fiscales: nunca la hagas pública.
-2. Activá el control de coherencia antes del primer commit:
+1. **Creá tu copia como repositorio privado.** Va a contener tus datos fiscales: nunca la
+   hagas pública. En GitHub, **"Use this template"** y elegí privado. **No hagas un fork:**
+   el fork de un repo público no puede ser privado.
+2. Activá el control de coherencia **antes del primer commit**:
    ```bash
    git config core.hooksPath .githooks
    ```
+   Desde ahí, ningún commit pasa si algo no cuadra. Para comprobar que el control funciona
+   en tu máquina: `bash scripts/probar-check.sh`.
 3. Abrí Claude Code en la carpeta y corré **`/alta`**. Te entrevista, investiga cada
    jurisdicción que te toca y genera tu ficha, las referencias de cada país, el calendario de
    vencimientos y los libros.
@@ -55,5 +65,14 @@ registro español (IVA, retención de IRPF, inversión del sujeto pasivo, amorti
 para ver cómo funciona y como modelo: cuando `/alta` da de alta España usa este formato, y
 para otro país define el suyo.
 
-Para comprobar que el control funciona, `bash scripts/probar-check.sh` rompe una copia del
-ejemplo a propósito y verifica que el control lo detecta.
+`bash scripts/probar-check.sh` rompe una copia del ejemplo de muchas maneras a propósito y
+verifica que el control detecta cada una. **Por eso el ejemplo no se borra** aunque ya tengas
+tus libros.
+
+## Lo que pasa solo
+
+- **Al abrir una sesión:** si no hay ficha, te propone `/alta`; si este mes no se hizo la
+  vigilancia normativa, te lo recuerda.
+- **Al cerrar una sesión:** commitea lo que haya cambiado en `documentos-*/` (facturas,
+  libros, justificantes), pasando por el control. **No hace push.** Si el control lo bloquea,
+  deja los archivos sin commitear y te avisa al abrir la sesión siguiente.

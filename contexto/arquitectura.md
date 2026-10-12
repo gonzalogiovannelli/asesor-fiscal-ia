@@ -22,7 +22,7 @@ Límite (C2): optimiza y evalúa consecuencias; **no diseña ocultamiento.**
 PDF suelto
    |  procesar-facturas: lee, extrae, CALCULA cada campo, renombra
    v
-LIBROS registro   (documentos-<país>/registro-*.md)   -> fuente de verdad viva
+LIBROS registro   (documentos-<país>/registro-*-<año>.md)  -> fuente de verdad viva
    |  transportar y sumar (NO recalcular)
    v
 RESÚMENES         (declaraciones/<año>/...)           -> vista derivada
@@ -104,12 +104,16 @@ débil:
 1. **Prevención estructural:** des-duplicar. Si un dato vive en un solo sitio, no puede
    desincronizarse. No depende de la disciplina.
 2. **Detección automática:** `scripts/check-coherencia.sh`. Enlaces rotos, patrones y rutas
-   obsoletos (también en `.claude/*.json`), índices de tickets, cuadre aritmético de los
-   libros, términos prohibidos por jurisdicción, y transporte resumen contra libro. Está
-   enganchado como **pre-commit bloqueante**: un commit con incoherencias se aborta. En un
+   obsoletos (también en `.claude/*.json`), índices de tickets en los dos sentidos, cuadre
+   aritmético de los libros, términos prohibidos por jurisdicción (en el contenido y en los
+   nombres de archivo), y transporte resumen contra libro, con signo. Una línea de
+   configuración mal escrita también es una incidencia. Está enganchado como **pre-commit
+   bloqueante** que revisa **lo que se va a commitear**, no la carpeta de trabajo. En un
    clon nuevo se activa con `git config core.hooksPath .githooks`.
 3. **Propagación sistemática:** el mapa de la sección 6 y el paso de coherencia de `destilar`.
-4. **Auditoría periódica completa**, como red de seguridad.
+4. **Auditoría periódica completa**, como red de seguridad: una vez al año, agendada en el
+   calendario por `alta`. Se corre el control, `revisar-vencimientos` y `vigilar-normativa`,
+   y se relee la ficha contra la situación real.
 
 Este documento describe la 3 y la 4; lo que garantiza es la 1 y la 2.
 
