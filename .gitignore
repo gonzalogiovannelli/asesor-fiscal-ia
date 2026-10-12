@@ -1,0 +1,11 @@
+# Archivos del SO
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporales
+*.tmp
+*~
+
+# Configuración local de Claude Code
+.claude/settings.local.json

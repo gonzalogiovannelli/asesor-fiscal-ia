@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "m=$(date +%Y-%m); f=\"vigilancia/$(date +%Y).md\"; msg=''; [ -f contexto/ficha.md ] || msg='El sistema no esta dado de alta: no existe contexto/ficha.md. Corre la skill alta antes de nada.'; if [ -z \"$msg\" ] && ! grep -q \"^## $m\" \"$f\" 2>/dev/null; then msg=\"Recordatorio: este mes ($m) todavia no se hizo la vigilancia normativa. Corre la skill vigilar-normativa cuando puedas.\"; fi; [ -n \"$msg\" ] && printf '{\"systemMessage\":\"%s\",\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"%s\"}}' \"$msg\" \"$msg\"; exit 0",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ls -d documentos-*/ >/dev/null 2>&1 || exit 0; git add -- documentos-*/ >/dev/null 2>&1; n=$(git diff --cached --name-only -- documentos-*/ | wc -l | tr -d ' '); [ \"$n\" -gt 0 ] || exit 0; if git commit -q -m 'documentos: auto-commit al cierre de sesion' -- documentos-*/ >/dev/null 2>&1; then printf '{\"systemMessage\":\"Documentos: %s archivo(s) commiteados al cierre de sesion.\"}' \"$n\"; else printf '{\"systemMessage\":\"Documentos: el auto-commit fallo (probablemente el control de coherencia). Revisalo en la proxima sesion.\"}'; fi; exit 0",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

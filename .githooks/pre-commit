@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# pre-commit: bloquea el commit si el control de coherencia falla
+# (contexto/arquitectura.md, sección 7, nivel 2).
+# Se activa con:  git config core.hooksPath .githooks
+# Saltarlo a propósito (no recomendado, solo emergencias):  git commit --no-verify
+if ! bash scripts/check-coherencia.sh; then
+  echo
+  echo "❌ Commit ABORTADO: hay incidencias de coherencia (arriba). Arreglalas y reintentá."
+  echo "   Perímetro: la historia congelada (bitacora/, tickets/cerrados/) no cuenta."
+  exit 1
+fi
