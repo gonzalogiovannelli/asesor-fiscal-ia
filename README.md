@@ -76,3 +76,7 @@ tus libros.
 - **Al cerrar una sesión:** commitea lo que haya cambiado en `documentos-*/` (facturas,
   libros, justificantes), pasando por el control. **No hace push.** Si el control lo bloquea,
   deja los archivos sin commitear y te avisa al abrir la sesión siguiente.
+
+## Licencia
+
+MIT. Ver [LICENSE](LICENSE).
