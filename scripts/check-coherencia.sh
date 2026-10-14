@@ -5,7 +5,7 @@
 # Sale 0 si todo está bien; 1 si hay incidencias.
 #
 # Respeta el perímetro (arquitectura.md, sección 5): la capa histórica congelada
-# (bitacora/, tickets/cerrados/) se excluye de los checks de contenido.
+# (bitacora/, tickets/cerrados/, CHANGELOG.md) se excluye de los checks de contenido.
 #
 # Configuración, en scripts/:
 #   libros.conf               un expediente por línea:  <carpeta> <formato>
@@ -38,6 +38,7 @@ live_md() {
     -not -path './.git/*' \
     -not -path './bitacora/*' \
     -not -path './tickets/cerrados/*' \
+    -not -path './CHANGELOG.md' \
     -not -path './scripts/*'
 }
 
@@ -360,5 +361,5 @@ echo "⚠️  $N incidencia(s) de coherencia:"
 echo
 sort "$TMP" | sed 's/^/  /'
 echo
-echo "(Perímetro: bitacora/ y tickets/cerrados/ están excluidos, son historia congelada.)"
+echo "(Perímetro: bitacora/, tickets/cerrados/ y CHANGELOG.md están excluidos, son historia congelada.)"
 exit 1

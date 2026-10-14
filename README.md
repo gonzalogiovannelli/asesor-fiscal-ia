@@ -27,7 +27,8 @@ de ahí investiga en fuentes oficiales qué obligaciones te tocan y arma el rest
    ```bash
    git config core.hooksPath .githooks
    ```
-   Desde ahí, ningún commit pasa si algo no cuadra. Para comprobar que el control funciona
+   Desde ahí, ningún commit pasa si algo no cuadra, y cada commit sube la versión del repo
+   según su prefijo (ver más abajo). Para comprobar que el control funciona
    en tu máquina: `bash scripts/probar-check.sh`.
 3. Abrí Claude Code en la carpeta y corré **`/alta`**. Te entrevista, investiga cada
    jurisdicción que te toca y genera tu ficha, las referencias de cada país, el calendario de
@@ -76,6 +77,20 @@ tus libros.
 - **Al cerrar una sesión:** commitea lo que haya cambiado en `documentos-*/` (facturas,
   libros, justificantes), pasando por el control. **No hace push.** Si el control lo bloquea,
   deja los archivos sin commitear y te avisa al abrir la sesión siguiente.
+
+## Versión
+
+El repo tiene versión (`VERSION`, `CHANGELOG.md` y una etiqueta `vX.Y.Z` por versión), y sube sola
+con cada commit según su prefijo, siguiendo [Conventional Commits](https://www.conventionalcommits.org/)
+y [SemVer](https://semver.org/):
+
+- `chore:` datos (facturas, libros, consultas, contexto, tickets). No sube la versión
+- `fix:` un ajuste a una skill, un hook o un script. Sube el último número
+- `feat:` algo nuevo (una skill, un script, un mecanismo). Sube el del medio
+- `!` detrás del tipo (`feat!:`) si cambia cómo se usa el repo. Sube el primero
+
+El hook `commit-msg` rechaza el commit que no lleve prefijo, y `post-commit` sube la versión.
+Lo anterior al 2026-10-14 se reconstruyó del historial.
 
 ## Licencia
 

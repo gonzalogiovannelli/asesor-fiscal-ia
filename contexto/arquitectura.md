@@ -109,7 +109,9 @@ débil:
    nombres de archivo), y transporte resumen contra libro, con signo. Una línea de
    configuración mal escrita también es una incidencia. Está enganchado como **pre-commit
    bloqueante** que revisa **lo que se va a commitear**, no la carpeta de trabajo. En un
-   clon nuevo se activa con `git config core.hooksPath .githooks`.
+   clon nuevo se activa con `git config core.hooksPath .githooks`. En la misma carpeta,
+   `commit-msg` exige el prefijo de tipo y `post-commit` sube la versión del repo
+   (`.githooks/version.js`); `CHANGELOG.md` cuenta como historia congelada.
 3. **Propagación sistemática:** el mapa de la sección 6 y el paso de coherencia de `destilar`.
 4. **Auditoría periódica completa**, como red de seguridad: una vez al año, agendada en el
    calendario por `alta`. Se corre el control, `revisar-vencimientos` y `vigilar-normativa`,

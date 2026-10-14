@@ -15,6 +15,6 @@ git checkout-index -a -f --prefix="$tmp/" || { echo "❌ No se pudo copiar el í
 if ! bash "$tmp/scripts/check-coherencia.sh"; then
   echo
   echo "❌ Commit ABORTADO: hay incidencias de coherencia en lo preparado (arriba). Arreglalas y reintentá."
-  echo "   Perímetro: la historia congelada (bitacora/, tickets/cerrados/) no cuenta."
+  echo "   Perímetro: la historia congelada (bitacora/, tickets/cerrados/, CHANGELOG.md) no cuenta."
   exit 1
 fi

@@ -9,6 +9,15 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-.}\" || exit 0; [ \"$(git config core.hooksPath)\" = \".githooks\" ] || echo '{\"systemMessage\":\"AVISO: los hooks de git no estan activos en esta maquina, asi que ni corre el control de coherencia ni sube la version. Se activan con: git config core.hooksPath .githooks\",\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"core.hooksPath no apunta a .githooks: los commits no pasan el control de coherencia ni suben la version. Mencionalo en una linea al empezar y pregunta si se activa con git config core.hooksPath .githooks.\"}}'; exit 0",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "SessionEnd": [
@@ -16,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"${CLAUDE_PROJECT_DIR:-.}\" || exit 0; git rev-parse --git-dir >/dev/null 2>&1 || exit 0; ls -d documentos-*/ >/dev/null 2>&1 || exit 0; git add -- documentos-*/ >/dev/null 2>&1; n=$(git diff --cached --name-only -- documentos-*/ | wc -l | tr -d ' '); [ \"$n\" -gt 0 ] || exit 0; if salida=$(git commit -q -m 'documentos: auto-commit al cierre de sesion' -- documentos-*/ 2>&1); then exit 0; else git reset -q -- documentos-*/ >/dev/null 2>&1; printf '%s\\n' \"$salida\" | grep -E 'incidencia|ROTO|CUADRE|TRANSPORTE|TERMINO|CONFIG|ABORTADO' | head -5 > .claude/cierre-pendiente.txt; [ -s .claude/cierre-pendiente.txt ] || echo 'el commit fallo sin detalle' > .claude/cierre-pendiente.txt; fi; exit 0",
+            "command": "cd \"${CLAUDE_PROJECT_DIR:-.}\" || exit 0; git rev-parse --git-dir >/dev/null 2>&1 || exit 0; ls -d documentos-*/ >/dev/null 2>&1 || exit 0; git add -- documentos-*/ >/dev/null 2>&1; n=$(git diff --cached --name-only -- documentos-*/ | wc -l | tr -d ' '); [ \"$n\" -gt 0 ] || exit 0; if salida=$(git commit -q -m 'chore: documentos: auto-commit al cierre de sesion' -- documentos-*/ 2>&1); then exit 0; else git reset -q -- documentos-*/ >/dev/null 2>&1; printf '%s\\n' \"$salida\" | grep -E 'incidencia|ROTO|CUADRE|TRANSPORTE|TERMINO|CONFIG|ABORTADO' | head -5 > .claude/cierre-pendiente.txt; [ -s .claude/cierre-pendiente.txt ] || echo 'el commit fallo sin detalle' > .claude/cierre-pendiente.txt; fi; exit 0",
             "timeout": 30
           }
         ]

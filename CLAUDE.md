@@ -58,6 +58,9 @@ historia inmutable. Ante contradicción manda `contexto/`, y se resuelve la cont
    **fuente**. Un dato sin fecha de caducidad es una mentira futura.
 7. **La normativa no se afirma de memoria.** El conocimiento del modelo tiene fecha de corte:
    lo que diga qué obliga hoy se busca en la fuente oficial y se cita.
+8. **Cada commit empieza con su tipo:** `chore:` datos, `fix:` un ajuste, `feat:` algo nuevo,
+   y `!` detrás del tipo si cambia cómo se usa el repo. La versión sube sola y el hook
+   `commit-msg` rechaza el commit sin prefijo. Ver la sección Versión del `README.md`.
 
 ## Alcance y límites
 
